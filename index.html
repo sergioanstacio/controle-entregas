@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Controle de Entregas</title>
+<title>JMX Aluguel de Jogos de Mesas — Controle de Entregas</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -74,6 +74,21 @@
     color: var(--ink-soft);
     font-size: 13px;
   }
+
+  .brand-row{
+    display:flex;
+    align-items:center;
+    gap: 16px;
+    margin-left: 14px;
+  }
+  .brand-logo{
+    flex-shrink: 0;
+    width: 56px;
+    height: 56px;
+  }
+  .brand-text{ min-width: 0; }
+  .brand-text h1{ margin: 0 0 2px; }
+  .brand-text .sub{ margin: 0; }
 
   /* FORM CARD */
   .card{
@@ -362,6 +377,8 @@
     .grid{ grid-template-columns: 1fr; }
     .entry{ grid-template-columns: 1fr; }
     .entry .e-meta{ align-items:flex-start; flex-direction:row; gap:10px; }
+    .brand-logo{ width: 42px; height: 42px; }
+    .brand-row{ gap: 12px; }
   }
 </style>
 </head>
@@ -370,8 +387,21 @@
 
   <header>
     <p class="eyebrow">Romaneio &middot; Controle de Saída</p>
-    <h1>Controle de Entregas</h1>
-    <p class="sub">Registre data, destinatário, endereço, quantidade, valor e status de cada entrega.</p>
+    <div class="brand-row">
+      <svg class="brand-logo" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="3" width="50" height="50" rx="11" fill="#2b2620" stroke="#b1432e" stroke-width="2"/>
+        <rect x="3" y="3" width="50" height="50" rx="11" fill="none" stroke="#e8dcc8" stroke-width="1" stroke-dasharray="2 3" opacity="0.4"/>
+        <circle cx="16" cy="16" r="3.4" fill="#f7f2e7"/>
+        <circle cx="40" cy="16" r="3.4" fill="#f7f2e7"/>
+        <circle cx="16" cy="40" r="3.4" fill="#f7f2e7"/>
+        <circle cx="40" cy="40" r="3.4" fill="#f7f2e7"/>
+        <circle cx="28" cy="28" r="3.4" fill="#4a6b3a"/>
+      </svg>
+      <div class="brand-text">
+        <h1>JMX Aluguel de Jogos de Mesas</h1>
+        <p class="sub">Controle de entregas &mdash; data, destinatário, endereço, quantidade, valor e status.</p>
+      </div>
+    </div>
   </header>
 
   <div class="card">
