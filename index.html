@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Controle de Entregas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --kraft: #e8dcc8;
+    --kraft-dark: #d8c8a8;
+    --ink: #2b2620;
+    --ink-soft: #5a5246;
+    --stamp-red: #b1432e;
+    --stamp-green: #4a6b3a;
+    --paper: #f7f2e7;
+    --line: #c9b896;
+    --card: #fffdf8;
+    --shadow: rgba(43,38,32,0.12);
+  }
+
+  * { box-sizing: border-box; }
+
+  body{
+    margin:0;
+    background: var(--kraft);
+    background-image:
+      repeating-linear-gradient(0deg, rgba(0,0,0,0.015) 0px, transparent 1px, transparent 2px),
+      radial-gradient(circle at 20% 10%, rgba(255,255,255,0.25), transparent 45%);
+    color: var(--ink);
+    font-family: 'JetBrains Mono', monospace;
+    min-height:100vh;
+    padding: 32px 16px 80px;
+  }
+
+  .wrap{ max-width: 900px; margin: 0 auto; }
+
+  /* HEADER — etiqueta de remessa */
+  header{
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    border-radius: 4px;
+    padding: 22px 26px;
+    margin-bottom: 26px;
+    position: relative;
+    box-shadow: 6px 6px 0 var(--shadow);
+  }
+  header::before{
+    content: "";
+    position: absolute;
+    top: 10px; bottom: 10px; left: 10px;
+    width: 3px;
+    background: repeating-linear-gradient(180deg, var(--ink) 0 6px, transparent 6px 12px);
+    opacity: 0.35;
+  }
+  .eyebrow{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--stamp-red);
+    font-weight: 700;
+    margin: 0 0 6px 14px;
+  }
+  h1{
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(26px, 4vw, 34px);
+    margin: 0 0 4px 14px;
+    letter-spacing: -0.01em;
+  }
+  .sub{
+    margin: 0 0 0 14px;
+    color: var(--ink-soft);
+    font-size: 13px;
+  }
+
+  /* FORM CARD */
+  .card{
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 26px;
+    margin-bottom: 28px;
+    box-shadow: 0 2px 0 var(--shadow);
+  }
+  .card h2{
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 16px;
+    margin: 0 0 18px;
+    display:flex;
+    align-items:center;
+    gap: 10px;
+  }
+  .card h2::before{
+    content: "";
+    width: 9px; height: 9px;
+    background: var(--stamp-green);
+    border-radius: 50%;
+    display:inline-block;
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px 18px;
+  }
+  .field{ display:flex; flex-direction:column; gap:6px; }
+  .field.full{ grid-column: 1 / -1; }
+  label{
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    font-weight: 600;
+  }
+  input{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    padding: 10px 12px;
+    border: 1.5px solid var(--line);
+    border-radius: 4px;
+    background: var(--paper);
+    color: var(--ink);
+    outline: none;
+    transition: border-color .15s, background .15s;
+  }
+  input:focus{
+    border-color: var(--ink);
+    background: #fff;
+  }
+  input::placeholder{ color: #b3a890; }
+
+  select{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    padding: 10px 12px;
+    border: 1.5px solid var(--line);
+    border-radius: 4px;
+    background: var(--paper);
+    color: var(--ink);
+    outline: none;
+    transition: border-color .15s, background .15s;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235a5246' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 16px;
+    padding-right: 34px;
+  }
+  select:focus{
+    border-color: var(--ink);
+    background-color: #fff;
+  }
+
+  .actions{
+    margin-top: 20px;
+    display:flex;
+    gap: 12px;
+    align-items:center;
+  }
+  button{
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    cursor:pointer;
+    border-radius: 4px;
+    border: none;
+    padding: 11px 22px;
+    transition: transform .1s, opacity .15s;
+  }
+  button:active{ transform: translateY(1px); }
+
+  .btn-primary{
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .btn-primary:hover{ opacity: 0.88; }
+
+  #status-msg{
+    font-size: 12px;
+    color: var(--stamp-green);
+    font-weight: 600;
+    min-height: 16px;
+  }
+  #status-msg.error{ color: var(--stamp-red); }
+
+  /* LIST */
+  .list-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin: 0 4px 12px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .list-head h2{
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 16px;
+    margin:0;
+  }
+  .count{
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+
+  /* FILTER BAR */
+  .filter-bar{
+    display:flex;
+    gap: 8px;
+    margin: 0 4px 16px;
+    flex-wrap: wrap;
+  }
+  .filter-btn{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    background: var(--card);
+    color: var(--ink-soft);
+    border: 1.5px solid var(--line);
+    border-radius: 20px;
+    padding: 7px 16px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .filter-btn:hover{ border-color: var(--ink); color: var(--ink); }
+  .filter-btn.active{
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+  .filter-btn[data-filter="entregue"].active{ background: var(--stamp-green); border-color: var(--stamp-green); }
+  .filter-btn[data-filter="recolhido"].active{ background: var(--stamp-red); border-color: var(--stamp-red); }
+
+  /* STATUS BADGE */
+  .badge{
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 20px;
+    white-space: nowrap;
+    display: inline-block;
+  }
+  .badge.entregue{
+    background: rgba(74,107,58,0.12);
+    color: var(--stamp-green);
+    border: 1px solid rgba(74,107,58,0.35);
+  }
+  .badge.recolhido{
+    background: rgba(177,67,46,0.12);
+    color: var(--stamp-red);
+    border: 1px solid rgba(177,67,46,0.35);
+  }
+
+  .entries{ display:flex; flex-direction:column; gap: 10px; }
+
+  .entry{
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--line);
+    border-radius: 4px;
+    padding: 16px 18px;
+    display:grid;
+    grid-template-columns: 100px 1fr auto;
+    gap: 4px 18px;
+    align-items: center;
+    position: relative;
+  }
+  .entry.is-entregue{ border-left-color: var(--stamp-green); }
+  .entry.is-recolhido{ border-left-color: var(--stamp-red); }
+  .entry .e-date{
+    font-size: 12px;
+    color: var(--ink-soft);
+    font-weight: 600;
+  }
+  .entry .e-main{ display:flex; flex-direction:column; gap:5px; }
+  .entry .e-name{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    display:flex;
+    align-items:center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .entry .e-addr{
+    font-size: 12.5px;
+    color: var(--ink-soft);
+  }
+  .entry .e-meta{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+    gap: 2px;
+    font-size: 13px;
+  }
+  .entry .e-qty{ color: var(--ink-soft); font-size: 12px; }
+  .entry .e-val{ font-weight: 700; font-size: 15px; }
+  .entry-actions{
+    grid-column: 1 / -1;
+    display:flex;
+    justify-content:flex-end;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .toggle-btn{
+    background: transparent;
+    color: var(--ink-soft);
+    font-size: 11px;
+    padding: 4px 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: 1px solid var(--line);
+  }
+  .toggle-btn:hover{ border-color: var(--ink); color: var(--ink); }
+  .del-btn{
+    background: transparent;
+    color: var(--stamp-red);
+    font-size: 11px;
+    padding: 4px 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: 1px solid transparent;
+  }
+  .del-btn:hover{ border-color: var(--stamp-red); }
+
+  .empty{
+    text-align:center;
+    padding: 40px 20px;
+    color: var(--ink-soft);
+    font-size: 13px;
+    border: 1.5px dashed var(--line);
+    border-radius: 6px;
+    background: rgba(255,255,255,0.4);
+  }
+
+  .total-bar{
+    margin-top: 18px;
+    display:flex;
+    justify-content:flex-end;
+    gap: 10px;
+    align-items:baseline;
+    padding: 0 4px;
+  }
+  .total-bar .t-label{
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-soft);
+  }
+  .total-bar .t-val{
+    font-family:'Space Grotesk', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+  }
+
+  @media (max-width: 560px){
+    .grid{ grid-template-columns: 1fr; }
+    .entry{ grid-template-columns: 1fr; }
+    .entry .e-meta{ align-items:flex-start; flex-direction:row; gap:10px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Romaneio &middot; Controle de Saída</p>
+    <h1>Controle de Entregas</h1>
+    <p class="sub">Registre data, destinatário, endereço, quantidade, valor e status de cada entrega.</p>
+  </header>
+
+  <div class="card">
+    <h2>Nova entrega</h2>
+    <form id="delivery-form">
+      <div class="grid">
+        <div class="field">
+          <label for="data">Data</label>
+          <input type="date" id="data" required>
+        </div>
+        <div class="field">
+          <label for="nome">Nome</label>
+          <input type="text" id="nome" placeholder="Destinatário" required>
+        </div>
+        <div class="field full">
+          <label for="endereco">Endereço</label>
+          <input type="text" id="endereco" placeholder="Rua, número, bairro, cidade" required>
+        </div>
+        <div class="field">
+          <label for="quantidade">Quantidade</label>
+          <input type="number" id="quantidade" placeholder="0" min="1" step="1" required>
+        </div>
+        <div class="field">
+          <label for="valor">Valor (R$)</label>
+          <input type="number" id="valor" placeholder="0,00" min="0" step="0.01" required>
+        </div>
+        <div class="field">
+          <label for="status">Status</label>
+          <select id="status" required>
+            <option value="entregue">Entregue</option>
+            <option value="recolhido">Recolhido</option>
+          </select>
+        </div>
+      </div>
+      <div class="actions">
+        <button type="submit" class="btn-primary">Adicionar entrega</button>
+        <span id="status-msg"></span>
+      </div>
+    </form>
+  </div>
+
+  <div class="list-head">
+    <h2>Entregas registradas</h2>
+    <span class="count" id="count-label">0 entregas</span>
+  </div>
+
+  <div class="filter-bar">
+    <button type="button" class="filter-btn active" data-filter="todos">Todos</button>
+    <button type="button" class="filter-btn" data-filter="entregue">Entregue</button>
+    <button type="button" class="filter-btn" data-filter="recolhido">Recolhido</button>
+  </div>
+
+  <div id="entries-list" class="entries"></div>
+
+  <div class="total-bar">
+    <span class="t-label">Total geral</span>
+    <span class="t-val" id="total-val">R$ 0,00</span>
+  </div>
+
+</div>
+
+<script>
+const STORAGE_KEY = 'entregas';
+let entregas = [];
+let filtroAtivo = 'todos';
+
+const form = document.getElementById('delivery-form');
+const listEl = document.getElementById('entries-list');
+const countLabel = document.getElementById('count-label');
+const totalVal = document.getElementById('total-val');
+const statusMsg = document.getElementById('status-msg');
+const filterBtns = document.querySelectorAll('.filter-btn');
+
+filterBtns.forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    filterBtns.forEach(b=> b.classList.remove('active'));
+    btn.classList.add('active');
+    filtroAtivo = btn.getAttribute('data-filter');
+    render();
+  });
+});
+
+function formatCurrency(n){
+  return n.toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
+}
+
+function formatDate(iso){
+  if(!iso) return '';
+  const [y,m,d] = iso.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+async function loadEntregas(){
+  try{
+    const result = await window.storage.get(STORAGE_KEY);
+    entregas = result ? JSON.parse(result.value) : [];
+  }catch(e){
+    entregas = [];
+  }
+  render();
+}
+
+async function saveEntregas(){
+  try{
+    const result = await window.storage.set(STORAGE_KEY, JSON.stringify(entregas));
+    if(!result){
+      showStatus('Não foi possível salvar. Tente novamente.', true);
+    }
+  }catch(e){
+    showStatus('Erro ao salvar os dados.', true);
+  }
+}
+
+function showStatus(msg, isError){
+  statusMsg.textContent = msg;
+  statusMsg.className = isError ? 'error' : '';
+  if(!isError){
+    setTimeout(()=>{ statusMsg.textContent=''; }, 2200);
+  }
+}
+
+function render(){
+  listEl.innerHTML = '';
+
+  const filtradas = filtroAtivo === 'todos'
+    ? entregas
+    : entregas.filter(e => e.status === filtroAtivo);
+
+  if(entregas.length === 0){
+    listEl.innerHTML = '<div class="empty">Nenhuma entrega registrada ainda. Use o formulário acima para começar.</div>';
+  } else if(filtradas.length === 0){
+    listEl.innerHTML = '<div class="empty">Nenhuma entrega com esse status.</div>';
+  } else {
+    const sorted = [...filtradas].sort((a,b)=> new Date(b.data) - new Date(a.data));
+    sorted.forEach(item=>{
+      const div = document.createElement('div');
+      const statusAtual = item.status === 'recolhido' ? 'recolhido' : 'entregue';
+      div.className = `entry is-${statusAtual}`;
+      const outroStatus = statusAtual === 'entregue' ? 'recolhido' : 'entregue';
+      const outroLabel = outroStatus === 'entregue' ? 'Entregue' : 'Recolhido';
+      div.innerHTML = `
+        <div class="e-date">${formatDate(item.data)}</div>
+        <div class="e-main">
+          <span class="e-name">
+            ${escapeHtml(item.nome)}
+            <span class="badge ${statusAtual}">${statusAtual === 'entregue' ? 'Entregue' : 'Recolhido'}</span>
+          </span>
+          <span class="e-addr">${escapeHtml(item.endereco)}</span>
+        </div>
+        <div class="e-meta">
+          <span class="e-val">${formatCurrency(item.valor)}</span>
+          <span class="e-qty">qtd: ${item.quantidade}</span>
+        </div>
+        <div class="entry-actions">
+          <button class="toggle-btn" data-id="${item.id}" data-next="${outroStatus}">Marcar ${outroLabel}</button>
+          <button class="del-btn" data-id="${item.id}">Remover</button>
+        </div>
+      `;
+      listEl.appendChild(div);
+    });
+  }
+
+  countLabel.textContent = `${filtradas.length} de ${entregas.length} entrega${entregas.length === 1 ? '' : 's'}`;
+  const total = filtradas.reduce((sum, e)=> sum + Number(e.valor), 0);
+  totalVal.textContent = formatCurrency(total);
+
+  document.querySelectorAll('.del-btn').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      const id = btn.getAttribute('data-id');
+      entregas = entregas.filter(e=> e.id !== id);
+      render();
+      await saveEntregas();
+      showStatus('Entrega removida.');
+    });
+  });
+
+  document.querySelectorAll('.toggle-btn').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      const id = btn.getAttribute('data-id');
+      const next = btn.getAttribute('data-next');
+      const item = entregas.find(e=> e.id === id);
+      if(item){ item.status = next; }
+      render();
+      await saveEntregas();
+      showStatus('Status atualizado.');
+    });
+  });
+}
+
+function escapeHtml(str){
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+form.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+
+  const data = document.getElementById('data').value;
+  const nome = document.getElementById('nome').value.trim();
+  const endereco = document.getElementById('endereco').value.trim();
+  const quantidade = document.getElementById('quantidade').value;
+  const valor = document.getElementById('valor').value;
+  const status = document.getElementById('status').value;
+
+  if(!data || !nome || !endereco || !quantidade || !valor){
+    showStatus('Preencha todos os campos.', true);
+    return;
+  }
+
+  const novaEntrega = {
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2,7),
+    data, nome, endereco,
+    quantidade: Number(quantidade),
+    valor: Number(valor),
+    status
+  };
+
+  entregas.push(novaEntrega);
+  render();
+  await saveEntregas();
+  showStatus('Entrega adicionada com sucesso.');
+  form.reset();
+  document.getElementById('data').focus();
+});
+
+loadEntregas();
+</script>
+</body>
+</html>
